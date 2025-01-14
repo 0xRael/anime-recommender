@@ -37,7 +37,7 @@ export default function UsernameForm({ onUsernameSubmit }: UsernameFormProps) {
           placeholder="Enter your AniList username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white"
           disabled={isLoading}
         />
         <button
