@@ -108,13 +108,17 @@ export default function AnimeRecommender({ username }: AnimeRecommenderProps) {
           staffMembers
         )
 
+        const recommendationRating = parentEntry
+          ? parentEntry.media.recommendations?.nodes?.find(rec => rec.mediaRecommendation && rec.mediaRecommendation.id === anime.id)?.rating ?? 0
+          : 0
+
         return {
           id: anime.id,
           title: anime.title.romaji,
           predictedRating: rating,
           coverImage: anime.coverImage?.medium || '',
           influentialFactors: factors,
-          recommendationRating: parentEntry ? parentEntry.media.recommendations?.nodes?.find(rec => rec.mediaRecommendation && rec.mediaRecommendation.id === anime.id)?.rating || 0 : 0
+          recommendationRating: recommendationRating
         }
       })
       .filter((recommendation): recommendation is RecommendedAnime => recommendation !== null)

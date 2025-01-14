@@ -95,7 +95,7 @@ export interface AnimeEntry {
     predictedRating: number
     coverImage: string
     influentialFactors: InfluentialFactor[]
-    recommendationRating?: number
+    recommendationRating: number
     genres?: string[]
     tags?: { name: string; rank: number }[]
     meanScore?: number
