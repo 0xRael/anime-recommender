@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Suspense } from 'react'
-import AnimeRecommender from './components/AnimeRecommender'
+import AnimeRecommender from './components/AnimeRecommender/AnimeRecommender'
 import UsernameForm from './components/UsernameForm'
 
 export default function Home() {
@@ -20,3 +20,4 @@ export default function Home() {
     </main>
   )
 }
+
