@@ -8,6 +8,9 @@ export interface AnimeEntry {
       name: string
       rank: number
     }[]
+    coverImage: {
+      medium: string
+    }
     meanScore: number
     duration: number
     episodes: number
