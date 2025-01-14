@@ -41,14 +41,24 @@ export function calculateWeightedRatings(userAnimeList: UserAnimeList[]): {
     watchedAnimeIds.push(media.id)
 
     const updateMapping = (mapping: GenreTagMapping | StaffMapping | StudioMapping | VoiceActorMapping, key: string | number) => {
-      if (!mapping[key]) {
-        mapping[key] = { score: 0, hours: 0 }
+      if (typeof key === 'string' && 'string' in mapping) {
+        if (!mapping[key]) {
+          (mapping as GenreTagMapping)[key] = { score: 0, hours: 0 };
+        }
+        if (score > 0) {
+          (mapping as GenreTagMapping)[key].score += (score - meanScore) * adjustedWatchHours;
+        }
+        (mapping as GenreTagMapping)[key].hours += adjustedWatchHours;
+      } else if (typeof key === 'number' && 'number' in mapping) {
+        if (!mapping[key]) {
+          (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key] = { score: 0, hours: 0 };
+        }
+        if (score > 0) {
+          (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].score += (score - meanScore) * adjustedWatchHours;
+        }
+        (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].hours += adjustedWatchHours;
       }
-      if (score > 0) {
-        mapping[key].score += (score - meanScore) * adjustedWatchHours
-      }
-      mapping[key].hours += adjustedWatchHours
-    }
+    };
     
     if(score > 0){
       media.genres.forEach(genre => updateMapping(genreMapping, normalizeString(genre)))
@@ -66,9 +76,13 @@ export function calculateWeightedRatings(userAnimeList: UserAnimeList[]): {
   // Normalize scores
   const normalizeMapping = (mapping: GenreTagMapping | StaffMapping | StudioMapping | VoiceActorMapping) => {
     Object.keys(mapping).forEach((key) => {
-      mapping[key].score /= mapping[key].hours
-    })
-  }
+      if (typeof key === 'string' && 'string' in mapping) {
+        (mapping as GenreTagMapping)[key].score /= (mapping as GenreTagMapping)[key].hours;
+      } else if (typeof key === 'number' && 'number' in mapping) {
+        (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].score /= (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].hours;
+      }
+    });
+  };
 
   normalizeMapping(genreMapping)
   normalizeMapping(tagMapping)

@@ -62,21 +62,21 @@ export interface AnimeEntry {
   }
   
   export interface StaffMapping {
-    [id: number]: {
+    [key: number]: {
       score: number
       hours: number
     }
   }
   
   export interface StudioMapping {
-    [id: number]: {
+    [key: number]: {
       score: number
       hours: number
     }
   }
   
   export interface VoiceActorMapping {
-    [id: number]: {
+    [key: number]: {
       score: number
       hours: number
     }

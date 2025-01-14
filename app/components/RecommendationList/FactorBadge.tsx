@@ -1,28 +1,57 @@
-import { RefObject } from 'react'
+import { InfluentialFactor } from '../../../types/anime'
+import { X, ExternalLink } from 'lucide-react'
 
-interface InfoPopupProps {
-  onClose: () => void
-  popupRef: RefObject<HTMLDivElement>
+interface FactorBadgeProps {
+  factor: InfluentialFactor
+  onRemove: () => void
 }
 
-export default function InfoPopup({ onClose, popupRef }: InfoPopupProps) {
+export default function FactorBadge({ factor, onRemove }: FactorBadgeProps) {
+  const getFactorLink = () => {
+    if (factor.id) {
+      switch (factor.type) {
+        case 'staff':
+          return `https://anilist.co/staff/${factor.id}`;
+        case 'studio':
+          return `https://anilist.co/studio/${factor.id}`;
+        case 'voiceActor':
+          return `https://anilist.co/staff/${factor.id}`;
+        case 'parent':
+          return `https://anilist.co/anime/${factor.id}`;
+        default:
+          return null;
+      }
+    }
+    return null;
+  };
+
+  const link = getFactorLink();
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div ref={popupRef} className="bg-white p-6 rounded-lg shadow-lg max-w-md">
-        <h4 className="text-lg font-semibold mb-2">How recommendations work</h4>
-        <p className="text-sm text-gray-600">
-          This anime was recommended based on your viewing history, preferences, and recommendations from users with similar taste. The predicted rating is
-          calculated using a weighted system that considers your ratings, watch time for similar genres and
-          tags, and how often this anime is recommended to fans of anime you've enjoyed.
-        </p>
-        <button
-          onClick={onClose}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    <span className="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline flex items-center"
+          onClick={(e) => e.stopPropagation()}
         >
-          Close
-        </button>
-      </div>
-    </div>
-  )
+          {factor.name}
+          <ExternalLink size={12} className="ml-1" />
+        </a>
+      ) : (
+        factor.name
+      )}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
+      >
+        <X size={12} />
+      </button>
+    </span>
+  );
 }
-
