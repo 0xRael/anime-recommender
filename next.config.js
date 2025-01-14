@@ -1,5 +1,16 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-};
+  reactStrictMode: true,
+  images: {
+    domains: ['s4.anilist.co'],
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.css$/,
+      use: ['postcss-loader'],
+    });
+    return config;
+  },
+}
 
-export default nextConfig;
+module.exports = nextConfig
