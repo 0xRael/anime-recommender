@@ -41,24 +41,30 @@ export function calculateWeightedRatings(userAnimeList: UserAnimeList[]): {
     watchedAnimeIds.push(media.id)
 
     const updateMapping = (mapping: GenreTagMapping | StaffMapping | StudioMapping | VoiceActorMapping, key: string | number) => {
-      if (typeof key === 'string' && 'string' in mapping) {
-        if (!mapping[key]) {
-          (mapping as GenreTagMapping)[key] = { score: 0, hours: 0 };
+      // Type Guard
+      if (typeof key === 'string') {
+        // Key is a string, so it must be a genre or tag
+        const mappingAsGenreTagMapping = mapping as GenreTagMapping;
+        if (!mappingAsGenreTagMapping[key]) {
+          mappingAsGenreTagMapping[key] = { score: 0, hours: 0 }
         }
         if (score > 0) {
-          (mapping as GenreTagMapping)[key].score += (score - meanScore) * adjustedWatchHours;
+          mappingAsGenreTagMapping[key].score += (score - meanScore) * adjustedWatchHours
         }
-        (mapping as GenreTagMapping)[key].hours += adjustedWatchHours;
-      } else if (typeof key === 'number' && 'number' in mapping) {
-        if (!mapping[key]) {
-          (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key] = { score: 0, hours: 0 };
+        mappingAsGenreTagMapping[key].hours += adjustedWatchHours
+
+      } else {
+        // Key is a number, so it must be a staff, studio, or voice actor
+        const mappingAsStaffMapping = mapping as StaffMapping;
+        if (!mappingAsStaffMapping[key]) {
+          mappingAsStaffMapping[key] = { score: 0, hours: 0 }
         }
         if (score > 0) {
-          (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].score += (score - meanScore) * adjustedWatchHours;
+          mappingAsStaffMapping[key].score += (score - meanScore) * adjustedWatchHours
         }
-        (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].hours += adjustedWatchHours;
+        mappingAsStaffMapping[key].hours += adjustedWatchHours
       }
-    };
+    }
     
     if(score > 0){
       media.genres.forEach(genre => updateMapping(genreMapping, normalizeString(genre)))
@@ -76,13 +82,18 @@ export function calculateWeightedRatings(userAnimeList: UserAnimeList[]): {
   // Normalize scores
   const normalizeMapping = (mapping: GenreTagMapping | StaffMapping | StudioMapping | VoiceActorMapping) => {
     Object.keys(mapping).forEach((key) => {
-      if (typeof key === 'string' && 'string' in mapping) {
-        (mapping as GenreTagMapping)[key].score /= (mapping as GenreTagMapping)[key].hours;
-      } else if (typeof key === 'number' && 'number' in mapping) {
-        (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].score /= (mapping as StaffMapping | StudioMapping | VoiceActorMapping)[key].hours;
+      // Type Guard
+      if (typeof key === 'string') {
+        // Key string? Must be genre or tag
+        const mappingAsGenreTagMapping = mapping as GenreTagMapping;
+        mappingAsGenreTagMapping[key].score /= mappingAsGenreTagMapping[key].hours
+      } else {
+        // Key number? Must be staff, studio, or voice actor
+        const mappingAsStaffMapping = mapping as StaffMapping;
+        mappingAsStaffMapping[key].score /= mappingAsStaffMapping[key].hours
       }
-    });
-  };
+    })
+  }
 
   normalizeMapping(genreMapping)
   normalizeMapping(tagMapping)
