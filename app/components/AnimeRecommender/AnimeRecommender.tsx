@@ -70,6 +70,31 @@ export default function AnimeRecommender({ username }: AnimeRecommenderProps) {
         setError('No recommendations found. Please try again later or contact support if the issue persists.')
         return
       }
+
+      const newRecommendations = recommendedAnimeDetails.map(anime => {
+        const { rating, factors } = predictRating(
+          anime,
+          genreMapping,
+          tagMapping,
+          staffMapping,
+          studioMapping,
+          voiceActorMapping,
+          meanScore,
+          filteredUserAnimeList.find(entry => entry.media.id === anime.id) || null,
+          removedFactors,
+          staffMembers
+        )
+        return {
+          id: anime.id,
+          title: anime.title.romaji,
+          predictedRating: rating,
+          coverImage: anime.coverImage?.medium || '',
+          influentialFactors: factors,
+          recommendationRating: 0 // or any other default value
+        }
+      })
+
+      setRecommendations(newRecommendations.filter(rec => !isNaN(rec.predictedRating)))
     } catch (error) {
       console.error('Error fetching recommendations:', error)
       if (error instanceof ApolloError) {
